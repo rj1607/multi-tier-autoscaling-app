@@ -1,25 +1,33 @@
 from flask import Blueprint, jsonify
+from models.product import Product
 
 products_bp = Blueprint("products", __name__)
 
-PRODUCTS = [
-    {
-        "id": 1,
-        "name": "Laptop",
-        "price": 50000
-    },
-    {
-        "id": 2,
-        "name": "Keyboard",
-        "price": 1200
-    },
-    {
-        "id": 3,
-        "name": "Mouse",
-        "price": 700
-    }
+products = [
+    Product(
+        1,
+        "Laptop",
+        "High Performance Laptop",
+        50000,
+        15
+    ),
+    Product(
+        2,
+        "Keyboard",
+        "Mechanical Keyboard",
+        2500,
+        30
+    ),
+    Product(
+        3,
+        "Mouse",
+        "Wireless Mouse",
+        1200,
+        50
+    )
 ]
 
+
 @products_bp.route("/products", methods=["GET"])
-def products():
-    return jsonify(PRODUCTS)
+def get_products():
+    return jsonify([product.to_dict() for product in products])
