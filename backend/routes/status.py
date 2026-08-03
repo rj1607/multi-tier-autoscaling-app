@@ -1,11 +1,13 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint
+from flask import jsonify
+
 import platform
 
 status_bp = Blueprint("status", __name__)
 
 
-@status_bp.route("/status", methods=["GET"])
-def status():
+@status_bp.route("/app-status", methods=["GET"])
+def application_status():
 
     return jsonify(
         {
@@ -14,4 +16,4 @@ def status():
             "python_version": platform.python_version(),
             "status": "Running"
         }
-    )
+    ), 200

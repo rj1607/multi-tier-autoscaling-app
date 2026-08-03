@@ -1,5 +1,7 @@
-from flask import Blueprint, jsonify
-from database.db import get_connection
+from flask import Blueprint
+from flask import jsonify
+
+from models.product import Product
 
 products_bp = Blueprint("products", __name__)
 
@@ -7,16 +9,16 @@ products_bp = Blueprint("products", __name__)
 @products_bp.route("/products", methods=["GET"])
 def get_products():
 
-    connection = get_connection()
+    try:
 
-    cursor = connection.cursor()
+        products = Product.get_all()
 
-    cursor.execute("SELECT * FROM products")
+        return jsonify(products), 200
 
-    products = cursor.fetchall()
+    except Exception as error:
 
-    cursor.close()
-
-    connection.close()
-
-    return jsonify(products)
+        return jsonify(
+            {
+                "error": str(error)
+            }
+        ), 500

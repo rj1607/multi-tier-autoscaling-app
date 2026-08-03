@@ -1,16 +1,27 @@
-from flask import Blueprint, jsonify
-from datetime import datetime
+from flask import Blueprint
+
+from database.db import get_connection
 
 health_bp = Blueprint("health", __name__)
 
 
-@health_bp.route("/health", methods=["GET"])
+@health_bp.route("/status", methods=["GET"])
 def health():
 
-    return jsonify(
-        {
-            "status": "Healthy",
-            "application": "Multi-Tier Auto-Scaling Web Application",
-            "time": datetime.utcnow().isoformat() + "Z"
-        }
-    )
+    try:
+
+        connection = get_connection()
+
+        connection.close()
+
+        return {
+            "status": "healthy",
+            "database": "connected"
+        }, 200
+
+    except Exception as error:
+
+        return {
+            "status": "unhealthy",
+            "error": str(error)
+        }, 500

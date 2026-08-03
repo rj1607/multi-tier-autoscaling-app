@@ -1,36 +1,63 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 
+from config import Config
+
 from routes.health import health_bp
 from routes.products import products_bp
 from routes.status import status_bp
 
-app = Flask(__name__)
 
-CORS(app)
+def create_app():
 
-app.register_blueprint(health_bp)
-app.register_blueprint(products_bp)
-app.register_blueprint(status_bp)
+    app = Flask(__name__)
+
+    CORS(app)
+
+    app.register_blueprint(health_bp)
+    app.register_blueprint(products_bp)
+    app.register_blueprint(status_bp)
+
+    @app.route("/")
+    def home():
+
+        return jsonify(
+            {
+                "application": "Multi-Tier Auto-Scaling Web Application",
+                "version": "1.0.0",
+                "backend": "Flask",
+                "status": "Running"
+            }
+        )
+
+    @app.errorhandler(404)
+    def not_found(error):
+
+        return jsonify(
+            {
+                "error": "Not Found"
+            }
+        ), 404
+
+    @app.errorhandler(500)
+    def internal_server_error(error):
+
+        return jsonify(
+            {
+                "error": "Internal Server Error"
+            }
+        ), 500
+
+    return app
 
 
-@app.route("/")
-def home():
-
-    return jsonify(
-        {
-            "project": "Multi-Tier Auto-Scaling Web Application",
-            "version": "1.0.0",
-            "backend": "Flask",
-            "developer": "Janvi",
-            "status": "Running"
-        }
-    )
+app = create_app()
 
 
 if __name__ == "__main__":
+
     app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=True
+        host=Config.APP_HOST,
+        port=Config.APP_PORT,
+        debug=False
     )

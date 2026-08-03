@@ -1,16 +1,33 @@
-class Product:
-    def __init__(self, product_id, name, description, price, stock):
-        self.product_id = product_id
-        self.name = name
-        self.description = description
-        self.price = price
-        self.stock = stock
+from database.db import get_connection
 
-    def to_dict(self):
-        return {
-            "id": self.product_id,
-            "name": self.name,
-            "description": self.description,
-            "price": self.price,
-            "stock": self.stock
-        }
+
+class Product:
+
+    @staticmethod
+    def get_all():
+
+        connection = get_connection()
+
+        try:
+
+            with connection.cursor() as cursor:
+
+                cursor.execute(
+                    """
+                    SELECT
+                        id,
+                        name,
+                        description,
+                        price,
+                        stock,
+                        created_at
+                    FROM products
+                    ORDER BY id ASC
+                    """
+                )
+
+                return cursor.fetchall()
+
+        finally:
+
+            connection.close()
