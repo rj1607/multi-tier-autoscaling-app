@@ -10,7 +10,7 @@ docker ps
 
 echo ""
 
-curl http://localhost/status
+curl http://localhost:5000/status
 
 echo ""
 
