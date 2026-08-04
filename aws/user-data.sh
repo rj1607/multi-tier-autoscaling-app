@@ -10,11 +10,10 @@ echo "Starting EC2 Bootstrap"
 echo "========================================="
 
 #########################################
-# Update Ubuntu
+# Update Packages
 #########################################
 
 apt-get update -y
-apt-get upgrade -y
 
 #########################################
 # Install Required Packages
@@ -47,7 +46,7 @@ systemctl start docker
 usermod -aG docker ubuntu
 
 #########################################
-# Install Docker Compose V2
+# Install Docker Compose Plugin
 #########################################
 
 mkdir -p /home/ubuntu/.docker/cli-plugins
@@ -61,16 +60,14 @@ chmod +x /home/ubuntu/.docker/cli-plugins/docker-compose
 chown -R ubuntu:ubuntu /home/ubuntu/.docker
 
 #########################################
-# Clone Project
+# Clone Repository
 #########################################
 
 cd /home/ubuntu
 
 if [ ! -d "multi-tier-autoscaling-app" ]
 then
-
-git clone https://github.com/rj1607/multi-tier-autoscaling-app.git
-
+    git clone https://github.com/rj1607/multi-tier-autoscaling-app.git
 fi
 
 cd multi-tier-autoscaling-app
@@ -78,15 +75,10 @@ cd multi-tier-autoscaling-app
 git pull origin main
 
 #########################################
-# Create backend .env
+# Create Backend Environment
 #########################################
 
-if [ ! -f backend/.env ]
-then
-
-cp backend/.env.example backend/.env
-
-fi
+cp -f backend/.env.example backend/.env
 
 #########################################
 # Make Scripts Executable
@@ -101,8 +93,12 @@ chmod +x scripts/*.sh
 ./scripts/deploy.sh
 
 #########################################
-# Finished
+# Verify Application
 #########################################
+
+./scripts/healthcheck.sh || true
+
+./scripts/status.sh || true
 
 echo ""
 echo "========================================="

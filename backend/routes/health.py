@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from database.db import get_connection
+from database.db import database_available
 
 health_bp = Blueprint("health", __name__)
 
@@ -8,20 +8,17 @@ health_bp = Blueprint("health", __name__)
 @health_bp.route("/status", methods=["GET"])
 def health():
 
-    try:
-
-        connection = get_connection()
-
-        connection.close()
+    if database_available():
 
         return {
             "status": "healthy",
+            "application": "running",
             "database": "connected"
         }, 200
 
-    except Exception as error:
-
-        return {
-            "status": "unhealthy",
-            "error": str(error)
-        }, 500
+    return {
+        "status": "healthy",
+        "application": "running",
+        "database": "not_configured",
+        "message": "Application is running without Amazon RDS."
+    }, 200

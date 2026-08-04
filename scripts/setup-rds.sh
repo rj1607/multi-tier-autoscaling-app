@@ -7,33 +7,16 @@ PROJECT_DIR="/home/ubuntu/multi-tier-autoscaling-app"
 echo "========================================="
 echo "Amazon RDS Setup Wizard"
 echo "========================================="
-echo ""
-
-#########################################
-# Fix Ownership
-#########################################
-
-if [ -d "$PROJECT_DIR" ]; then
-
-    OWNER=$(stat -c "%U" "$PROJECT_DIR")
-
-    if [ "$OWNER" != "ubuntu" ]; then
-
-        echo "Fixing project ownership..."
-
-        sudo chown -R ubuntu:ubuntu "$PROJECT_DIR"
-
-    fi
-
-fi
-
-chmod +x "$PROJECT_DIR"/scripts/*.sh || true
-
-#########################################
-# Go Project
-#########################################
 
 cd "$PROJECT_DIR"
+
+#########################################
+# Fix Permissions
+#########################################
+
+sudo chown -R ubuntu:ubuntu "$PROJECT_DIR" || true
+
+chmod +x scripts/*.sh
 
 #########################################
 # Ask RDS Details
@@ -42,18 +25,14 @@ cd "$PROJECT_DIR"
 read -rp "Enter RDS Endpoint: " RDS_ENDPOINT
 
 read -rp "Enter Database Username [admin]: " DB_USER
-
 DB_USER=${DB_USER:-admin}
 
 read -rsp "Enter Database Password: " DB_PASSWORD
-
 echo ""
 
 #########################################
 # Update backend/.env
 #########################################
-
-echo "Updating backend/.env..."
 
 cat > backend/.env <<EOF
 FLASK_APP=app.py
@@ -69,75 +48,32 @@ DB_PASSWORD=$DB_PASSWORD
 DB_NAME=autoscaling_app
 EOF
 
-echo "backend/.env updated."
-
-#########################################
-# Wait For RDS
-#########################################
-
 echo ""
-echo "Waiting for Amazon RDS..."
+echo "backend/.env updated successfully."
+
+#########################################
+# Wait For Amazon RDS
+#########################################
 
 ./scripts/wait-for-rds.sh "$RDS_ENDPOINT" 3306
 
 #########################################
-# Create Database (if missing)
+# Run Migration
 #########################################
-
-echo ""
-echo "Checking Database..."
-
-mysql \
--h "$RDS_ENDPOINT" \
--P 3306 \
--u "$DB_USER" \
--p"$DB_PASSWORD" \
--e "CREATE DATABASE IF NOT EXISTS autoscaling_app;"
-
-#########################################
-# Import Schema + Seed
-#########################################
-
-echo ""
-echo "Running Database Migration..."
 
 ./scripts/migrate.sh
 
 #########################################
-# Verify Tables
+# Restart Backend Only
 #########################################
 
-echo ""
-echo "========================================="
-echo "Verifying Database"
-echo "========================================="
-
-mysql \
--h "$RDS_ENDPOINT" \
--P 3306 \
--u "$DB_USER" \
--p"$DB_PASSWORD" \
--e "USE autoscaling_app; SHOW TABLES;"
+./scripts/restart-backend.sh
 
 #########################################
-# Restart Backend
+# Wait Backend
 #########################################
 
-echo ""
-echo "Restarting Backend..."
-
-docker compose -f docker-compose.aws.yml down
-
-docker compose -f docker-compose.aws.yml up -d --build
-
-#########################################
-# Wait
-#########################################
-
-echo ""
-echo "Waiting for Backend..."
-
-sleep 20
+sleep 15
 
 #########################################
 # Health Check
@@ -146,27 +82,23 @@ sleep 20
 ./scripts/healthcheck.sh
 
 #########################################
-# Verify Deployment
+# Verification
 #########################################
 
 ./scripts/verify.sh
 
-#########################################
-# Finished
-#########################################
-
 echo ""
 echo "========================================="
-echo "RDS Setup Completed Successfully"
+echo "Amazon RDS Configuration Complete"
 echo "========================================="
-echo ""
 
-echo "Backend Status:"
+echo ""
+echo "Backend Status"
+
 curl http://localhost:5000/status
 
 echo ""
-echo "Products:"
-curl http://localhost:5000/products
 
-echo ""
-echo "Application Ready."
+echo "Products"
+
+curl http://localhost:5000/products

@@ -1,33 +1,91 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 PROJECT_DIR="/home/ubuntu/multi-tier-autoscaling-app"
 
 echo "========================================="
-echo "Deploying Application"
+echo "Deploying Multi-Tier Application"
 echo "========================================="
+
+#########################################
+# Go To Project
+#########################################
 
 cd "$PROJECT_DIR"
 
+#########################################
+# Stop Existing Containers
+#########################################
+
 echo "Stopping old containers..."
+
 docker compose -f docker-compose.aws.yml down || true
 
-echo "Removing unused images..."
+#########################################
+# Clean Docker
+#########################################
+
+echo "Cleaning unused Docker images..."
+
 docker image prune -f
 
-echo "Building containers..."
-docker compose -f docker-compose.aws.yml build --no-cache
+#########################################
+# Build Images
+#########################################
 
-echo "Starting containers..."
+echo "Building Docker images..."
+
+docker compose -f docker-compose.aws.yml build
+
+#########################################
+# Start Containers
+#########################################
+
+echo "Starting Docker containers..."
+
 docker compose -f docker-compose.aws.yml up -d
 
-echo "Waiting for services..."
-sleep 15
+#########################################
+# Wait
+#########################################
 
+echo "Waiting for containers..."
+
+sleep 20
+
+#########################################
+# Show Running Containers
+#########################################
+
+echo ""
 echo "Running Containers"
+
 docker ps
 
+#########################################
+# Backend Status
+#########################################
+
+echo ""
+echo "Checking Backend..."
+
+curl http://localhost:5000/status || true
+
+#########################################
+# Frontend Status
+#########################################
+
+echo ""
+echo "Checking Frontend..."
+
+curl http://localhost || true
+
+#########################################
+# Deployment Finished
+#########################################
+
+echo ""
 echo "========================================="
-echo "Deployment Successful"
+echo "Deployment Completed Successfully"
 echo "========================================="

@@ -14,6 +14,7 @@ def create_app():
 
     CORS(app)
 
+    # Register Blueprints
     app.register_blueprint(health_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(status_bp)
@@ -26,7 +27,8 @@ def create_app():
                 "application": "Multi-Tier Auto-Scaling Web Application",
                 "version": "1.0.0",
                 "backend": "Flask",
-                "status": "Running"
+                "status": "Running",
+                "message": "Backend started successfully."
             }
         )
 
@@ -55,6 +57,10 @@ app = create_app()
 
 
 if __name__ == "__main__":
+
+    print("=========================================")
+    print("Starting Flask Backend")
+    print("=========================================")
 
     app.run(
         host=Config.APP_HOST,

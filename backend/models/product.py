@@ -6,9 +6,11 @@ class Product:
     @staticmethod
     def get_all():
 
-        connection = get_connection()
+        connection = None
 
         try:
+
+            connection = get_connection()
 
             with connection.cursor() as cursor:
 
@@ -30,4 +32,6 @@ class Product:
 
         finally:
 
-            connection.close()
+            if connection is not None:
+
+                connection.close()

@@ -1,17 +1,52 @@
 #!/bin/bash
 
-echo "========== Docker =========="
+set -euo pipefail
+
+echo "========================================="
+echo "Application Status"
+echo "========================================="
+
+#########################################
+# Docker Containers
+#########################################
+
+echo ""
+echo "Docker Containers"
+echo "-----------------------------------------"
 
 docker ps
 
-echo ""
-
-echo "========== Backend =========="
-
-curl http://localhost:5000/status || true
+#########################################
+# Backend Status
+#########################################
 
 echo ""
+echo "Backend Status"
+echo "-----------------------------------------"
 
-echo "========== Frontend =========="
+curl -f http://localhost:5000/status
 
-curl http://localhost || true
+#########################################
+# Application Status
+#########################################
+
+echo ""
+echo "Application Information"
+echo "-----------------------------------------"
+
+curl -f http://localhost:5000/app-status
+
+#########################################
+# Frontend
+#########################################
+
+echo ""
+echo "Frontend"
+echo "-----------------------------------------"
+
+curl -f http://localhost
+
+echo ""
+echo "========================================="
+echo "Status Check Completed"
+echo "========================================="

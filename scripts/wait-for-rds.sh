@@ -1,14 +1,38 @@
 #!/bin/bash
 
-HOST=$1
-PORT=$2
+set -euo pipefail
 
-echo "Waiting for Amazon RDS..."
+HOST=${1:?Missing RDS host}
+PORT=${2:-3306}
 
-until nc -z $HOST $PORT
+MAX_RETRIES=60
+SLEEP_SECONDS=5
+
+echo "========================================="
+echo "Waiting for Amazon RDS"
+echo "========================================="
+echo "Host : $HOST"
+echo "Port : $PORT"
+echo ""
+
+COUNTER=0
+
+until nc -z "$HOST" "$PORT"
 do
-    echo "RDS not ready..."
-    sleep 5
+    COUNTER=$((COUNTER+1))
+
+    echo "Attempt $COUNTER/$MAX_RETRIES : RDS not ready..."
+
+    if [ "$COUNTER" -ge "$MAX_RETRIES" ]; then
+        echo ""
+        echo "ERROR: Timed out waiting for Amazon RDS."
+        exit 1
+    fi
+
+    sleep "$SLEEP_SECONDS"
 done
 
-echo "Amazon RDS is Ready."
+echo ""
+echo "========================================="
+echo "Amazon RDS is Available"
+echo "========================================="
