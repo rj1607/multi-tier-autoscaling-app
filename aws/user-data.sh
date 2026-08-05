@@ -10,8 +10,10 @@ echo "Starting EC2 Bootstrap"
 echo "========================================="
 
 #########################################
-# Update Packages
+# Update Package Index
 #########################################
+
+export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -y
 
@@ -25,39 +27,20 @@ curl \
 wget \
 zip \
 unzip \
-ca-certificates \
-gnupg \
-lsb-release \
-netcat-openbsd \
-default-mysql-client
+docker.io \
+docker-compose-v2 \
+default-mysql-client \
+netcat-openbsd
 
 #########################################
-# Install Docker
+# Enable Docker
 #########################################
-
-if ! command -v docker >/dev/null 2>&1
-then
-    curl -fsSL https://get.docker.com | sh
-fi
 
 systemctl enable docker
+
 systemctl start docker
 
 usermod -aG docker ubuntu
-
-#########################################
-# Install Docker Compose Plugin
-#########################################
-
-mkdir -p /home/ubuntu/.docker/cli-plugins
-
-curl -SL \
-https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
--o /home/ubuntu/.docker/cli-plugins/docker-compose
-
-chmod +x /home/ubuntu/.docker/cli-plugins/docker-compose
-
-chown -R ubuntu:ubuntu /home/ubuntu/.docker
 
 #########################################
 # Clone Repository
@@ -65,8 +48,7 @@ chown -R ubuntu:ubuntu /home/ubuntu/.docker
 
 cd /home/ubuntu
 
-if [ ! -d "multi-tier-autoscaling-app" ]
-then
+if [ ! -d "multi-tier-autoscaling-app" ]; then
     git clone https://github.com/rj1607/multi-tier-autoscaling-app.git
 fi
 
@@ -75,7 +57,7 @@ cd multi-tier-autoscaling-app
 git pull origin main
 
 #########################################
-# Create Backend Environment
+# Backend Environment
 #########################################
 
 cp -f backend/.env.example backend/.env
@@ -99,6 +81,10 @@ chmod +x scripts/*.sh
 ./scripts/healthcheck.sh || true
 
 ./scripts/status.sh || true
+
+#########################################
+# Finished
+#########################################
 
 echo ""
 echo "========================================="
