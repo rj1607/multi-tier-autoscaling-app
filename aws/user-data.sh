@@ -2,7 +2,7 @@
 
 set -e
 
-exec > /var/log/user-data.log 2>&1
+exec > >(tee /var/log/user-data.log) 2>&1
 
 echo "========================================="
 echo "Starting EC2 Bootstrap"
