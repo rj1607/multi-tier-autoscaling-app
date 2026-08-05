@@ -1,8 +1,9 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
-exec > >(tee /var/log/user-data.log) 2>&1
+exec > >(tee /var/log/user-data.log)
+exec 2>&1
 
 echo "========================================="
 echo "Starting EC2 Bootstrap"
@@ -10,8 +11,8 @@ echo "========================================="
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt update -y
-apt install -y docker.io docker-compose-v2 git mysql-client
+apt-get  update -y
+apt-get install -y docker.io docker-compose-v2 git mysql-client
 
 systemctl enable docker
 systemctl start docker
