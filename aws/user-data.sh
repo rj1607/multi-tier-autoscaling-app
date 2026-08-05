@@ -10,8 +10,8 @@ echo "========================================="
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get -qq update
-apt-get -y -qq install docker.io docker-compose-v2 git
+apt-get update
+apt-get -y install docker.io docker-compose-v2 git
 
 systemctl enable docker
 systemctl start docker
