@@ -10,25 +10,19 @@ echo "Starting EC2 Bootstrap"
 echo "========================================="
 
 #########################################
-# Update Package Index
+# Update Packages
 #########################################
 
-export DEBIAN_FRONTEND=noninteractive
-
-apt-get update -y
+apt update -y
 
 #########################################
 # Install Required Packages
 #########################################
 
-apt-get install -y \
-git \
-curl \
-wget \
-zip \
-unzip \
+apt install -y \
 docker.io \
 docker-compose-v2 \
+git \
 default-mysql-client \
 netcat-openbsd
 
@@ -37,7 +31,6 @@ netcat-openbsd
 #########################################
 
 systemctl enable docker
-
 systemctl start docker
 
 usermod -aG docker ubuntu
@@ -57,7 +50,7 @@ cd multi-tier-autoscaling-app
 git pull origin main
 
 #########################################
-# Backend Environment
+# Create Backend Environment
 #########################################
 
 cp -f backend/.env.example backend/.env
