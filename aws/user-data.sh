@@ -2,7 +2,9 @@
 
 set -euo pipefail
 
-exec > >(tee /var/log/user-data.log)
+LOG_FILE="/var/log/user-data.log"
+
+exec > >(tee -a "$LOG_FILE")
 exec 2>&1
 
 echo "========================================="
