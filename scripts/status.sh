@@ -6,44 +6,19 @@ echo "========================================="
 echo "Application Status"
 echo "========================================="
 
-#########################################
-# Docker Containers
-#########################################
-
 echo ""
-echo "Docker Containers"
-echo "-----------------------------------------"
-
 docker ps
 
-#########################################
-# Backend Status
-#########################################
-
 echo ""
-echo "Backend Status"
-echo "-----------------------------------------"
-
-curl -f http://localhost:5000/status
-
-#########################################
-# Application Status
-#########################################
-
-echo ""
-echo "Application Information"
-echo "-----------------------------------------"
-
+echo "Backend"
 curl -f http://localhost:5000/app-status
 
-#########################################
-# Frontend
-#########################################
+echo ""
+echo "Products"
+curl -f http://localhost:5000/products
 
 echo ""
 echo "Frontend"
-echo "-----------------------------------------"
-
 curl -f http://localhost
 
 echo ""

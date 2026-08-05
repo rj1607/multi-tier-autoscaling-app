@@ -3,55 +3,37 @@
 set -euo pipefail
 
 echo "========================================="
-echo "Running Application Health Check"
+echo "Running Health Check"
 echo "========================================="
 
-#########################################
-# Docker Containers
-#########################################
-
 echo ""
-echo "Docker Containers"
-
 docker ps
-
-#########################################
-# Backend Health
-#########################################
 
 echo ""
 echo "Checking Backend..."
 
-BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/status || true)
+BACKEND=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/app-status)
 
-if [ "$BACKEND_STATUS" = "200" ]; then
-    echo "✓ Backend is Healthy"
-else
-    echo "✗ Backend is Unhealthy (HTTP $BACKEND_STATUS)"
+if [ "$BACKEND" != "200" ]; then
+    echo "Backend Failed"
     exit 1
 fi
 
-#########################################
-# Frontend Health
-#########################################
+echo "Backend OK"
 
 echo ""
 echo "Checking Frontend..."
 
-FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost || true)
+FRONTEND=$(curl -s -o /dev/null -w "%{http_code}" http://localhost)
 
-if [ "$FRONTEND_STATUS" = "200" ]; then
-    echo "✓ Frontend is Healthy"
-else
-    echo "✗ Frontend is Unhealthy (HTTP $FRONTEND_STATUS)"
+if [ "$FRONTEND" != "200" ]; then
+    echo "Frontend Failed"
     exit 1
 fi
 
-#########################################
-# Finished
-#########################################
+echo "Frontend OK"
 
 echo ""
 echo "========================================="
-echo "Health Check Passed Successfully"
+echo "Health Check Passed"
 echo "========================================="
