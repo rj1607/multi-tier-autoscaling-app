@@ -14,7 +14,7 @@ echo "========================================="
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get  update -y
-apt-get install -y docker.io docker-compose-v2 git mysql-client
+apt-get install -y docker.io docker-compose-v2 git mysql-client curl netcat-openbsd
 
 systemctl enable docker
 systemctl start docker
