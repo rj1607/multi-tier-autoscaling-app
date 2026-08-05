@@ -10,8 +10,8 @@ echo "========================================="
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get update -qq
-apt-get install -y -qq docker.io docker-compose-v2 git default-mysql-client netcat-openbsd
+apt-get -qq update
+apt-get -y -qq install docker.io docker-compose-v2 git
 
 systemctl enable docker
 systemctl start docker
