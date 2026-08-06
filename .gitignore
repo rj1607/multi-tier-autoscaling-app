@@ -1,26 +1,32 @@
-
-__pycache__/
+# Python
+_pycache_/
 *.pyc
-.env
-.vscode/
-.idea/
-*.sqlite3
-.DS_Store
-Thumbs.db
+*.pyo
+*.pyd
+*.db
 
-
-# Environment
+# Virtual Environment
 venv/
 .venv/
+env/
 
-# Keys
-*.pem
+# Environment Variables
+.env
 
-# Python cache
-.pytest_cache/
-
-# MySQL data
-mysql-data/
-
-# Logs
+# Docker
 *.log
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Node
+node_modules/
+
+# Git
+.idea/

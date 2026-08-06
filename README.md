@@ -1,21 +1,37 @@
-# Multi-Tier Auto-Scaling Web Application
+# Multi-Tier Web Application on AWS
 
-## Description
+## Tech Stack
 
-A Flask-based multi-tier web applicationdeployed on AWS using:
+- Frontend: HTML, CSS, JavaScript
+- Backend: Flask
+- Database: MySQL / Amazon RDS
+- Containers: Docker
+- Cloud: AWS EC2
+- Load Balancer: Application Load Balancer
+- Scaling: Auto Scaling Group
 
-- Amazon EC2
-- Application Load Balancer
-- Auto Scaling Group
-- Amazon RDS
-- Amazon CloudWatch
+---
 
-This project demonstrates a scalable cloud architecture.
+## Project Workflow
 
-## Team Member
+Local Development
 
-Janvi
+↓
 
-## Status
+Docker
 
-Project Setup Completed
+↓
+
+Amazon EC2
+
+↓
+
+Application Load Balancer
+
+↓
+
+Auto Scaling Group
+
+↓
+
+Amazon RDS

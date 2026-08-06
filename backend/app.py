@@ -9,22 +9,34 @@ from routes.status import status_bp
 
 
 def create_app():
+    """
+    Flask Application Factory
+    """
 
     app = Flask(__name__)
 
+    app.config["JSON_SORT_KEYS"] = False
+
     CORS(app)
 
+    # -------------------------------
     # Register Blueprints
+    # -------------------------------
+
+    app.register_blueprint(status_bp)
     app.register_blueprint(health_bp)
     app.register_blueprint(products_bp)
-    app.register_blueprint(status_bp)
+
+    # -------------------------------
+    # Home
+    # -------------------------------
 
     @app.route("/")
     def home():
 
         return jsonify(
             {
-                "application": "Multi-Tier Auto-Scaling Web Application",
+                "application": "Multi-Tier Web Application",
                 "version": "1.0.0",
                 "backend": "Flask",
                 "status": "Running",
@@ -32,21 +44,31 @@ def create_app():
             }
         )
 
+    # -------------------------------
+    # 404
+    # -------------------------------
+
     @app.errorhandler(404)
-    def not_found(error):
+    def page_not_found(error):
 
         return jsonify(
             {
-                "error": "Not Found"
+                "status": "error",
+                "message": "Route not found."
             }
         ), 404
+
+    # -------------------------------
+    # 500
+    # -------------------------------
 
     @app.errorhandler(500)
     def internal_server_error(error):
 
         return jsonify(
             {
-                "error": "Internal Server Error"
+                "status": "error",
+                "message": "Internal server error."
             }
         ), 500
 
@@ -58,12 +80,12 @@ app = create_app()
 
 if __name__ == "__main__":
 
-    print("=========================================")
+    print("=" * 50)
     print("Starting Flask Backend")
-    print("=========================================")
+    print("=" * 50)
 
     app.run(
         host=Config.APP_HOST,
         port=Config.APP_PORT,
-        debug=False
+        debug=False,
     )

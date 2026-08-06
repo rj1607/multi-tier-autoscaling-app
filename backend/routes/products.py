@@ -1,5 +1,4 @@
-from flask import Blueprint
-from flask import jsonify
+from flask import Blueprint, jsonify
 
 from database.db import database_available
 from models.product import Product
@@ -9,10 +8,9 @@ products_bp = Blueprint("products", __name__)
 
 @products_bp.route("/products", methods=["GET"])
 def get_products():
-
-    #########################################
-    # Database Not Configured Yet
-    #########################################
+    """
+    Return all products.
+    """
 
     if not database_available():
 
@@ -20,13 +18,9 @@ def get_products():
             {
                 "status": "database_not_configured",
                 "products": [],
-                "message": "Amazon RDS has not been configured yet."
+                "message": "Database is not configured."
             }
         ), 200
-
-    #########################################
-    # Database Available
-    #########################################
 
     try:
 
@@ -35,6 +29,7 @@ def get_products():
         return jsonify(
             {
                 "status": "success",
+                "count": len(products),
                 "products": products
             }
         ), 200

@@ -1,11 +1,13 @@
 import pymysql
-
 from pymysql.cursors import DictCursor
 
 from config import Config
 
 
-def database_available():
+def database_available() -> bool:
+    """
+    Check whether database is reachable.
+    """
 
     if not Config.database_configured():
         return False
@@ -19,8 +21,8 @@ def database_available():
             password=Config.DB_PASSWORD,
             database=Config.DB_NAME,
             cursorclass=DictCursor,
+            connect_timeout=5,
             autocommit=True,
-            connect_timeout=5
         )
 
         connection.close()
@@ -33,11 +35,14 @@ def database_available():
 
 
 def get_connection():
+    """
+    Return a database connection.
+    """
 
     if not Config.database_configured():
 
         raise RuntimeError(
-            "Database is not configured yet."
+            "Database configuration is missing."
         )
 
     return pymysql.connect(
@@ -47,6 +52,6 @@ def get_connection():
         password=Config.DB_PASSWORD,
         database=Config.DB_NAME,
         cursorclass=DictCursor,
+        connect_timeout=5,
         autocommit=True,
-        connect_timeout=5
     )

@@ -7,9 +7,11 @@ health_bp = Blueprint("health", __name__)
 
 @health_bp.route("/status", methods=["GET"])
 def health():
+    """
+    Application health endpoint.
+    """
 
     if database_available():
-
         return {
             "status": "healthy",
             "application": "running",
@@ -20,5 +22,5 @@ def health():
         "status": "healthy",
         "application": "running",
         "database": "not_configured",
-        "message": "Application is running without Amazon RDS."
+        "message": "Application is running without database."
     }, 200

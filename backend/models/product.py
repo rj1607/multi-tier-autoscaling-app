@@ -24,7 +24,7 @@ class Product:
                         stock,
                         created_at
                     FROM products
-                    ORDER BY id ASC
+                    ORDER BY id ASC;
                     """
                 )
 
@@ -32,6 +32,6 @@ class Product:
 
         finally:
 
-            if connection is not None:
+            if connection:
 
                 connection.close()
