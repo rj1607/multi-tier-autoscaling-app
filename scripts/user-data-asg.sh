@@ -1,38 +1,54 @@
 #!/bin/bash
-
 set -euo pipefail
 
-LOG_FILE="/var/log/user-data.log"
+LOG_FILE="/var/log/asg-user-data.log"
 
 exec > >(tee -a "$LOG_FILE")
 exec 2>&1
 
 echo "========================================="
-echo "Starting Auto Scaling Bootstrap"
+echo "Starting ASG Bootstrap"
 echo "========================================="
 
 PROJECT_DIR="/home/ubuntu/multi-tier-autoscaling-app"
 
-systemctl start docker
+# Ensure Docker is running
+sudo systemctl enable docker
+sudo systemctl start docker
 
+# Ensure ubuntu can use Docker
+sudo usermod -aG docker ubuntu || true
+
+# Wait until Docker is ready
+until docker info >/dev/null 2>&1
+do
+    sleep 2
+done
+
+# Go to project
 cd "$PROJECT_DIR"
 
-git config --global --add safe.directory "$PROJECT_DIR"
-
-git pull origin main
-
-if [ ! -f backend/.env ]; then
-    cp backend/.env.example backend/.env
-fi
-
+# Ensure scripts are executable
 chmod +x scripts/*.sh
 
-./scripts/deploy.sh
+# Stop any old containers
+docker compose -f docker-compose.aws.yml down || true
 
-./scripts/healthcheck.sh || true
+# Start application using images already stored in the AMI
+docker compose -f docker-compose.aws.yml up -d
 
-./scripts/status.sh || true
+# Wait for startup
+sleep 20
 
 echo "========================================="
-echo "Auto Scaling Bootstrap Completed"
+echo "Running Verification"
+echo "========================================="
+
+docker ps || true
+
+curl -f http://localhost:5000/app-status || true
+curl -f http://localhost || true
+
+echo "========================================="
+echo "ASG Bootstrap Complete"
 echo "========================================="
