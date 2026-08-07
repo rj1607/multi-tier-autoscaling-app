@@ -1,25 +1,4 @@
 services:
-
-  mysql:
-
-    image: mysql:8.0
-
-    container_name: mysql
-
-    restart: unless-stopped
-
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: autoscaling_app
-
-    ports:
-      - "3307:3306"
-
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
-
   backend:
 
     build:
@@ -35,9 +14,6 @@ services:
     ports:
       - "5000:5000"
 
-    depends_on:
-      - mysql
-
   frontend:
 
     build:
@@ -52,7 +28,3 @@ services:
 
     depends_on:
       - backend
-
-volumes:
-
-  mysql-data:
